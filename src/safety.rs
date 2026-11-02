@@ -23,7 +23,7 @@ fn rules() -> &'static CompiledRules {
     RULES.get_or_init(|| CompiledRules {
         blocked: vec![
             (
-                Regex::new(r"(?i)(?:^|[;&|]\s*)rm\s+(-[a-zA-Z]*r[a-zA-Z]*\s+)*(-[a-zA-Z]*f[a-zA-Z]*\s+)*/(\s|$|[;&|])").unwrap(),
+                Regex::new(r"(?i)(?:^|[;&|]\s*)rm\s+(-[a-zA-Z]*r[a-zA-Z]*\s+)*(-[a-zA-Z]*f[a-zA-Z]*\s+)*/\*?(\s|$|[;&|])").unwrap(),
                 "Root filesystem deletion ('rm -rf /') is blocked.",
             ),
             (
@@ -113,6 +113,10 @@ mod tests {
         let checker = SafetyChecker::new(false);
         assert!(matches!(
             checker.check_command("rm -rf /", true),
+            SafetyLevel::Blocked(_)
+        ));
+        assert!(matches!(
+            checker.check_command("rm -rf /*", true),
             SafetyLevel::Blocked(_)
         ));
         assert!(matches!(

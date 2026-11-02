@@ -71,8 +71,8 @@ impl AppConfig {
                 .with_context(|| format!("Failed to read config file: {}", p.display()))?;
             Self::from_toml_str(&content)?
         } else if Path::new("devices.toml").exists() {
-            let content = std::fs::read_to_string("devices.toml")
-                .context("Failed to read ./devices.toml")?;
+            let content =
+                std::fs::read_to_string("devices.toml").context("Failed to read ./devices.toml")?;
             Self::from_toml_str(&content)?
         } else {
             AppConfig::default()

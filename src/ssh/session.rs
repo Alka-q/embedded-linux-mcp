@@ -79,10 +79,11 @@ pub struct SshDeviceSession {
 
 impl SshDeviceSession {
     pub async fn connect(profile: DeviceProfile) -> Result<Self> {
-        let mut config = client::Config::default();
-        config.inactivity_timeout = Some(Duration::from_secs(300));
-        config.keepalive_interval = Some(Duration::from_secs(30));
-        let config = Arc::new(config);
+        let config = Arc::new(client::Config {
+            inactivity_timeout: Some(Duration::from_secs(300)),
+            keepalive_interval: Some(Duration::from_secs(30)),
+            ..Default::default()
+        });
 
         let addr = format!("{}:{}", profile.host, profile.port);
         let mut handle = tokio::time::timeout(

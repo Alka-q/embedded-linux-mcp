@@ -91,7 +91,10 @@ pub async fn read_remote_file(
             "base64".to_string(),
         )
     } else {
-        (String::from_utf8_lossy(slice).to_string(), "utf8".to_string())
+        (
+            String::from_utf8_lossy(slice).to_string(),
+            "utf8".to_string(),
+        )
     };
 
     Ok(FileReadOutput {
@@ -166,9 +169,8 @@ pub async fn transfer_file(
 
     match direction.to_lowercase().as_str() {
         "upload" => {
-            let data = std::fs::read(local_path).with_context(|| {
-                format!("Failed to read local file '{}'", local_path.display())
-            })?;
+            let data = std::fs::read(local_path)
+                .with_context(|| format!("Failed to read local file '{}'", local_path.display()))?;
             let checksum = sha256_hex(&data);
 
             // Attempt SFTP first; fall back cleanly to shell_stream (e.g., on minimal Dropbear setups)
@@ -234,32 +236,33 @@ pub async fn transfer_file(
         }
         "download" => {
             let max_download = 16 * 1024 * 1024; // 16 MB safety limit
-            let (out_bytes, method) = match try_sftp_download(session, remote_path, max_download).await {
-                Ok(bytes) => (bytes, "sftp".to_string()),
-                Err(_) => {
-                    let cmd = format!("cat {}", quoted_remote);
-                    let (exit_code, out_bytes, err_bytes, _, timed_out, truncated) = session
-                        .exec_raw_bytes(&cmd, None, 60_000, max_download)
-                        .await?;
+            let (out_bytes, method) =
+                match try_sftp_download(session, remote_path, max_download).await {
+                    Ok(bytes) => (bytes, "sftp".to_string()),
+                    Err(_) => {
+                        let cmd = format!("cat {}", quoted_remote);
+                        let (exit_code, out_bytes, err_bytes, _, timed_out, truncated) = session
+                            .exec_raw_bytes(&cmd, None, 60_000, max_download)
+                            .await?;
 
-                    if timed_out || exit_code != 0 {
-                        return Err(anyhow!(
-                            "Download from '{}' failed (exit {}, timed_out={}): {}",
-                            remote_path,
-                            exit_code,
-                            timed_out,
-                            String::from_utf8_lossy(&err_bytes).trim()
-                        ));
+                        if timed_out || exit_code != 0 {
+                            return Err(anyhow!(
+                                "Download from '{}' failed (exit {}, timed_out={}): {}",
+                                remote_path,
+                                exit_code,
+                                timed_out,
+                                String::from_utf8_lossy(&err_bytes).trim()
+                            ));
+                        }
+                        if truncated {
+                            return Err(anyhow!(
+                                "Remote file '{}' exceeds 16 MB transfer cap",
+                                remote_path
+                            ));
+                        }
+                        (out_bytes, "shell_stream".to_string())
                     }
-                    if truncated {
-                        return Err(anyhow!(
-                            "Remote file '{}' exceeds 16 MB transfer cap",
-                            remote_path
-                        ));
-                    }
-                    (out_bytes, "shell_stream".to_string())
-                }
-            };
+                };
 
             if let Some(parent) = local_path.parent() {
                 if !parent.as_os_str().is_empty() {

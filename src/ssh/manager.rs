@@ -213,8 +213,10 @@ impl SessionManager {
         let mut pipeline = String::from("dmesg");
         if let Some(lvl) = level {
             let l = lvl.trim().to_lowercase();
-            if ["emerg", "alert", "crit", "err", "warn", "notice", "info", "debug"]
-                .contains(&l.as_str())
+            if [
+                "emerg", "alert", "crit", "err", "warn", "notice", "info", "debug",
+            ]
+            .contains(&l.as_str())
             {
                 pipeline = format!("(dmesg -l {} 2>/dev/null || dmesg)", l);
             }

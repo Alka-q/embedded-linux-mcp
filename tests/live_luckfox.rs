@@ -71,7 +71,13 @@ async fn live_luckfox_pico_plus_end_to_end() {
     assert!(up.bytes_transferred > 0);
 
     let exec_out = manager
-        .exec(None, "/tmp/luckfox_mcp_probe.sh && rm -f /tmp/luckfox_mcp_probe.sh", None, None, 5000)
+        .exec(
+            None,
+            "/tmp/luckfox_mcp_probe.sh && rm -f /tmp/luckfox_mcp_probe.sh",
+            None,
+            None,
+            5000,
+        )
         .await
         .expect("exec probe script should succeed");
     assert_eq!(exec_out.exit_code, 0);

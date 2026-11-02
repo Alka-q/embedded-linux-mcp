@@ -1,4 +1,4 @@
-# embedded-linux-skill (`embedded-linux-mcp` + Agent Skill)
+# embedded-linux-mcp
 
 An open-source **Rust Model Context Protocol (MCP) Server** and **AI Agent Skill** designed for controlling, testing, and debugging network-connected embedded Linux devices (such as **Luckfox Pico Plus / Rockchip RV1106**, Raspberry Pi, BeagleBone, Zynq, and generic BusyBox/Buildroot/Yocto targets).
 
@@ -29,6 +29,8 @@ An open-source **Rust Model Context Protocol (MCP) Server** and **AI Agent Skill
 ### 1. Build from Source
 
 ```bash
+git clone https://github.com/Alka-q/embedded-linux-mcp.git
+cd embedded-linux-mcp
 cargo build --release
 ```
 

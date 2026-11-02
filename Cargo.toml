@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 description = "MCP server and AI agent toolkit for controlling, testing, and debugging network-connected embedded Linux devices"
 license = "MIT"
+repository = "https://github.com/Alka-q/embedded-linux-mcp"
+keywords = ["mcp", "embedded", "linux", "ssh", "busybox"]
+categories = ["command-line-utilities", "development-tools::debugging", "embedded"]
 
 [dependencies]
 anyhow = "1.0"

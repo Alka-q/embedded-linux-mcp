@@ -1,0 +1,8 @@
+default_device = "luckfox-pico-plus"
+
+[devices.luckfox-pico-plus]
+host = "192.168.111.7"
+port = 22
+username = "root"
+password = "luckfox"
+description = "Luckfox Pico Plus (Rockchip RV1106G2, ARM Cortex-A7, BusyBox)"

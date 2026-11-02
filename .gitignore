@@ -1,0 +1,5 @@
+/target
+devices.toml
+*.log
+.DS_Store
+.superpowers/

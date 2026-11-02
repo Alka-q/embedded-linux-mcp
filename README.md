@@ -58,7 +58,33 @@ The compiled binary will be located at `target/release/embedded-linux-mcp` (or `
 Or pass `--config /path/to/devices.toml` using `devices.example.toml` as a template. You can also connect dynamically at runtime without any config file by asking your agent:
 > *"Connect to the embedded device at 192.168.1.100 (user: root, pass: password) and inspect system_info and dmesg."*
 
-### 3. Install the Agent Skill
+### 3. Direct CLI Usage (Terminal Mode)
+
+In addition to running as an MCP server (when invoked with no subcommand or `serve`), `embedded-linux-mcp` can be used directly from your terminal:
+
+```bash
+# Inspect hardware, memory, storage, and network interfaces
+embedded-linux-mcp --host 192.168.1.100 --pass password info
+
+# Run a command on the target board
+embedded-linux-mcp --host 192.168.1.100 --pass password exec "ls -la /root"
+
+# Read and filter kernel logs (dmesg)
+embedded-linux-mcp --host 192.168.1.100 --pass password dmesg -n 50 --grep usb
+
+# Read a virtual /proc or /sys file
+embedded-linux-mcp --host 192.168.1.100 --pass password read /proc/cpuinfo
+
+# Upload a cross-compiled test binary to /tmp (RAM) and set executable permissions
+embedded-linux-mcp --host 192.168.1.100 --pass password upload ./my_app /tmp/my_app --mode 0755
+
+# Download a file from the board
+embedded-linux-mcp --host 192.168.1.100 --pass password download /tmp/capture.log ./capture.log
+```
+
+Pass `--json` to any CLI subcommand to get structured JSON output instead of human-formatted text, or use `devices.toml` / `EMBEDDED_*` environment variables so you don't need to repeat `--host` and `--pass`.
+
+### 4. Install the Agent Skill
 
 Copy or symlink `skills/embedded-linux` into your agent's skills directory (e.g. `~/.gemini/config/skills/embedded-linux` or `~/.claude/skills/embedded-linux`).
 

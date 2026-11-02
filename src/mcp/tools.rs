@@ -17,15 +17,15 @@ pub fn tool_definitions() -> Value {
         },
         {
             "name": "device_connect",
-            "description": "Connect to a network-attached embedded Linux device over SSH (e.g. Luckfox Pico Plus at 192.168.111.7) and register it in the session pool.",
+            "description": "Connect to a network-attached embedded Linux device over SSH (e.g. 192.168.1.100) and register it in the session pool.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
-                    "host": { "type": "string", "description": "IP address or hostname of the target device (e.g. '192.168.111.7')" },
+                    "host": { "type": "string", "description": "IP address or hostname of the target device (e.g. '192.168.1.100')" },
                     "name": { "type": "string", "description": "Optional alias for the device (defaults to host)" },
                     "port": { "type": "integer", "description": "SSH port (default: 22)", "default": 22 },
                     "username": { "type": "string", "description": "SSH username (default: 'root')", "default": "root" },
-                    "password": { "type": "string", "description": "SSH password (e.g. 'luckfox')" },
+                    "password": { "type": "string", "description": "SSH password" },
                     "key_path": { "type": "string", "description": "Optional path to SSH private key file" },
                     "description": { "type": "string", "description": "Optional description of the board" },
                     "set_default": { "type": "boolean", "description": "Set this device as the default target (default: true)", "default": true }

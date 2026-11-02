@@ -1,15 +1,15 @@
 # embedded-linux-mcp
 
-An open-source **Rust Model Context Protocol (MCP) Server** and **AI Agent Skill** designed for controlling, testing, and debugging network-connected embedded Linux devices (such as **Luckfox Pico Plus / Rockchip RV1106**, Raspberry Pi, BeagleBone, Zynq, and generic BusyBox/Buildroot/Yocto targets).
+An open-source **Rust Model Context Protocol (MCP) Server** and **AI Agent Skill** designed for controlling, testing, and debugging network-connected embedded Linux devices (ARM, ARM64, RISC-V, MIPS SBCs, Buildroot, Yocto, OpenWrt, and BusyBox/Dropbear targets).
 
 ## Key Features
 
 - **Pure-Rust Single Binary (`embedded-linux-mcp`):** Uses `russh` for multiplexed, persistent SSH2 sessions with zero C/OpenSSL build dependencies across Windows, Linux, and macOS.
-- **BusyBox & Dropbear Native:** Works out-of-the-box on minimal 64MB–256MB RAM embedded targets even when the SFTP subsystem is absent (automatic POSIX shell stream fallback with SHA-256 verification).
+- **BusyBox & Dropbear Native:** Works out-of-the-box on minimal 64MB–512MB RAM embedded targets even when the SFTP subsystem is absent (automatic POSIX shell stream fallback with SHA-256 verification).
 - **3-Tier Hardware Safety Guardrails:**
-  - **Blocked:** Prevents catastrophic flash/storage overwrites (`rm -rf /`, `mkfs.*`, `flash_erase`, `dd of=/dev/mtdblock*`).
+  - **Blocked:** Prevents catastrophic flash/storage overwrites (`rm -rf /`, `rm -rf /*`, `mkfs.*`, `flash_erase`, `dd of=/dev/mtdblock*`).
   - **Confirmation Required:** Protects against accidental network disconnection or reboots (`reboot`, `ip link set ... down`, `killall dropbear`) unless explicitly confirmed (`force: true`).
-- **Companion Agent Skill (`skills/embedded-linux/`):** Teaches AI agents embedded Linux discovery discipline, RAM-backed `/tmp` execution, sysfs peripheral debugging, and Rockchip RV1106 / Luckfox Pico specifics.
+- **Companion Agent Skill (`skills/embedded-linux/`):** Teaches AI agents embedded Linux discovery discipline, RAM-backed `/tmp` execution, sysfs peripheral debugging, and SoC GPIO/pinmux inspection.
 
 ## MCP Tools Provided
 
@@ -45,10 +45,10 @@ The compiled binary will be located at `target/release/embedded-linux-mcp` (or `
       "command": "/path/to/embedded-linux-mcp",
       "args": [],
       "env": {
-        "EMBEDDED_HOST": "192.168.111.7",
+        "EMBEDDED_HOST": "192.168.1.100",
         "EMBEDDED_USER": "root",
-        "EMBEDDED_PASS": "luckfox",
-        "EMBEDDED_NAME": "luckfox-pico-plus"
+        "EMBEDDED_PASS": "password",
+        "EMBEDDED_NAME": "device_name"
       }
     }
   }
@@ -56,7 +56,7 @@ The compiled binary will be located at `target/release/embedded-linux-mcp` (or `
 ```
 
 Or pass `--config /path/to/devices.toml` using `devices.example.toml` as a template. You can also connect dynamically at runtime without any config file by asking your agent:
-> *"Connect to the Luckfox Pico Plus at 192.168.111.7 (user: root, pass: luckfox) and inspect system_info and dmesg."*
+> *"Connect to the embedded device at 192.168.1.100 (user: root, pass: password) and inspect system_info and dmesg."*
 
 ### 3. Install the Agent Skill
 

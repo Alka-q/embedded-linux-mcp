@@ -138,7 +138,7 @@ impl SessionManager {
             return Ok(st.profiles.keys().next().unwrap().clone());
         }
         Err(anyhow!(
-            "No active default device configured. Call device_connect with host (e.g. '192.168.111.7') first."
+            "No active default device configured. Call device_connect with host (e.g. '192.168.1.100') first."
         ))
     }
 

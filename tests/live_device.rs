@@ -3,33 +3,34 @@ use embedded_linux_mcp::safety::{SafetyChecker, SafetyLevel};
 use embedded_linux_mcp::ssh::SessionManager;
 
 #[tokio::test]
-async fn live_luckfox_pico_plus_end_to_end() {
-    if std::env::var("LUCKFOX_LIVE_TEST").ok().as_deref() != Some("1") {
-        eprintln!("Skipping live hardware test (set LUCKFOX_LIVE_TEST=1 to run)");
+async fn live_embedded_device_end_to_end() {
+    if std::env::var("EMBEDDED_LIVE_TEST").ok().as_deref() != Some("1") {
+        eprintln!("Skipping live hardware test (set EMBEDDED_LIVE_TEST=1 to run)");
         return;
     }
 
-    let host = std::env::var("LUCKFOX_HOST").unwrap_or_else(|_| "192.168.111.7".to_string());
-    let user = std::env::var("LUCKFOX_USER").unwrap_or_else(|_| "root".to_string());
-    let pass = std::env::var("LUCKFOX_PASS").unwrap_or_else(|_| "luckfox".to_string());
+    let host = std::env::var("EMBEDDED_HOST").unwrap_or_else(|_| "192.168.1.100".to_string());
+    let user = std::env::var("EMBEDDED_USER").unwrap_or_else(|_| "root".to_string());
+    let pass = std::env::var("EMBEDDED_PASS").unwrap_or_else(|_| "password".to_string());
+    let name = std::env::var("EMBEDDED_NAME").unwrap_or_else(|_| "device_name".to_string());
 
     let manager = SessionManager::new(AppConfig::default());
     let summary = manager
         .connect_device(
             DeviceProfile {
-                name: "luckfox-pico-plus".into(),
+                name,
                 host: host.clone(),
                 port: 22,
                 username: user,
                 password: Some(pass),
                 password_env: None,
                 key_path: None,
-                description: Some("Live Luckfox Pico Plus".into()),
+                description: Some("Live Embedded Linux Target".into()),
             },
             true,
         )
         .await
-        .expect("Failed to connect to live Luckfox Pico Plus");
+        .expect("Failed to connect to live embedded target");
 
     assert!(summary.connected);
     println!("Connected uname: {}", summary.uname);
@@ -54,8 +55,7 @@ async fn live_luckfox_pico_plus_end_to_end() {
         .expect("file_read /proc/cpuinfo should succeed");
     assert!(cpuinfo.bytes_read > 0);
 
-    // Test file upload, execution in /tmp, and cleanup
-    let tmp_local = std::env::temp_dir().join("luckfox_mcp_probe.sh");
+    let tmp_local = std::env::temp_dir().join("embedded_mcp_probe.sh");
     std::fs::write(&tmp_local, "#!/bin/sh\necho \"MCP_PROBE_OK:$(uname -m)\"\n").unwrap();
 
     let up = manager
@@ -63,7 +63,7 @@ async fn live_luckfox_pico_plus_end_to_end() {
             None,
             "upload",
             &tmp_local,
-            "/tmp/luckfox_mcp_probe.sh",
+            "/tmp/embedded_mcp_probe.sh",
             Some("0755"),
         )
         .await
@@ -73,7 +73,7 @@ async fn live_luckfox_pico_plus_end_to_end() {
     let exec_out = manager
         .exec(
             None,
-            "/tmp/luckfox_mcp_probe.sh && rm -f /tmp/luckfox_mcp_probe.sh",
+            "/tmp/embedded_mcp_probe.sh && rm -f /tmp/embedded_mcp_probe.sh",
             None,
             None,
             5000,
@@ -85,7 +85,6 @@ async fn live_luckfox_pico_plus_end_to_end() {
 
     let _ = std::fs::remove_file(&tmp_local);
 
-    // Verify safety check blocks unforced reboot
     let safety = SafetyChecker::new(false);
     assert!(matches!(
         safety.check_command("reboot", false),

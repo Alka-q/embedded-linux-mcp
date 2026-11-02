@@ -366,10 +366,10 @@ mod tests {
 
     #[test]
     fn parses_system_info_markers_correctly() {
-        let sample = "===UNAME===\nLinux luckfox 5.10.160 armv7l\n===CPU===\nARMv7 Processor rev 5 (v7l)\n===BOARD===\nLuckfox Pico Plus\n===UPTIME===\n 10:00:00 up 1:23\n===MEM===\nMemTotal: 64 MB\n===STORAGE===\n/dev/root 100M\n===NET===\neth0 192.168.111.7\n";
+        let sample = "===UNAME===\nLinux embedded-board 5.10.160 armv7l\n===CPU===\nARMv7 Processor rev 5 (v7l)\n===BOARD===\nGeneric Embedded SBC\n===UPTIME===\n 10:00:00 up 1:23\n===MEM===\nMemTotal: 128 MB\n===STORAGE===\n/dev/root 100M\n===NET===\neth0 192.168.1.100\n";
         let parsed = parse_system_info_sections(sample);
-        assert_eq!(parsed.uname, "Linux luckfox 5.10.160 armv7l");
-        assert_eq!(parsed.board_model, "Luckfox Pico Plus");
-        assert_eq!(parsed.network_interfaces, "eth0 192.168.111.7");
+        assert_eq!(parsed.uname, "Linux embedded-board 5.10.160 armv7l");
+        assert_eq!(parsed.board_model, "Generic Embedded SBC");
+        assert_eq!(parsed.network_interfaces, "eth0 192.168.1.100");
     }
 }

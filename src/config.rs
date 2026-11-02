@@ -119,37 +119,37 @@ mod tests {
     #[test]
     fn parses_devices_toml_and_normalizes_names() {
         let raw = r#"
-            default_device = "luckfox"
+            default_device = "device_name"
 
-            [devices.luckfox]
-            host = "192.168.111.7"
+            [devices.device_name]
+            host = "192.168.1.100"
             username = "root"
-            password = "luckfox"
-            description = "Luckfox Pico Plus"
+            password = "password"
+            description = "Embedded Linux Target"
         "#;
         let cfg = AppConfig::from_toml_str(raw).expect("valid toml");
-        assert_eq!(cfg.default_device.as_deref(), Some("luckfox"));
-        let dev = cfg.devices.get("luckfox").expect("luckfox profile");
-        assert_eq!(dev.name, "luckfox");
-        assert_eq!(dev.host, "192.168.111.7");
+        assert_eq!(cfg.default_device.as_deref(), Some("device_name"));
+        let dev = cfg.devices.get("device_name").expect("device profile");
+        assert_eq!(dev.name, "device_name");
+        assert_eq!(dev.host, "192.168.1.100");
         assert_eq!(dev.port, 22);
-        assert_eq!(dev.resolved_password().as_deref(), Some("luckfox"));
+        assert_eq!(dev.resolved_password().as_deref(), Some("password"));
     }
 
     #[test]
     fn resolves_password_from_env_when_configured() {
-        std::env::set_var("TEST_LUCKFOX_PASS", "secret123");
+        std::env::set_var("TEST_EMBEDDED_PASS", "secret123");
         let dev = DeviceProfile {
-            name: "luckfox".into(),
-            host: "192.168.111.7".into(),
+            name: "device_name".into(),
+            host: "192.168.1.100".into(),
             port: 22,
             username: "root".into(),
             password: None,
-            password_env: Some("TEST_LUCKFOX_PASS".into()),
+            password_env: Some("TEST_EMBEDDED_PASS".into()),
             key_path: None,
             description: None,
         };
         assert_eq!(dev.resolved_password().as_deref(), Some("secret123"));
-        std::env::remove_var("TEST_LUCKFOX_PASS");
+        std::env::remove_var("TEST_EMBEDDED_PASS");
     }
 }

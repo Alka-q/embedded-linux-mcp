@@ -3,3 +3,4 @@ devices.toml
 *.log
 .DS_Store
 .superpowers/
+graphify-out/
